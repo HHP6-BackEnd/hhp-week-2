@@ -34,6 +34,7 @@ public class LectureFacade {
 
         User user = userService.getUser(applyLectureCommand.userId());
         Lecture lecture = lectureService.getLecture(applyLectureCommand.lectureId());
+        // 비관적 락
         ApplicationSchedule applicationSchedule = applicationScheduleService.getLectureApplicationSchedule(lecture);
         ApplicationHistory applicationHistory = applicationHistoryService.saveApplicationHistory(user, lecture);
         applicationSchedule.increaseCurrentApplicationCount();

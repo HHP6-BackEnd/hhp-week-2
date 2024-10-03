@@ -25,7 +25,8 @@ public class User extends BaseTimeEntity {
     private String userName;
 
     @Builder
-    public User(String userName) {
+    public User(Long userId, String userName) {
+        this.userId = userId;
         this.userName = userName;
     }
 
