@@ -17,7 +17,7 @@ public class SimpleApplicationScheduleRepository implements ApplicationScheduleR
 
     @Override
     public ApplicationSchedule getLectureApplicationSchedule(Long lectureId) {
-        return applicationScheduleJpaRepository.findById(lectureId)
+        return applicationScheduleJpaRepository.findByLecture_LectureId(lectureId)
                 .orElseThrow(() -> new IllegalStateException("해당 강의의 신청 스케쥴이 없습니다."));
     }
 

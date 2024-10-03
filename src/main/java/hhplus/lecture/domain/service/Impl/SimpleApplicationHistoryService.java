@@ -20,6 +20,11 @@ public class SimpleApplicationHistoryService implements ApplicationHistoryServic
     @Override
     @Transactional
     public ApplicationHistory saveApplicationHistory(User user, Lecture lecture) {
+
+        if (getUserAppliedLectureIds(user).contains(lecture.getLectureId())) {
+            throw new IllegalStateException("이미 수강신청한 특강입니다.");
+        };
+
         return applicationHistoryRepository.saveApplicationHistory(
                 ApplicationHistory.builder()
                         .user(user)

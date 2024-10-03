@@ -59,4 +59,43 @@ class LectureFacadeTest {
         assertThat(failureCount).isEqualTo(10);
     }
 
+    @Test
+    @DisplayName("1명이 동시에 5번 요청했을 때, 1번 빼고 모두 실패")
+    void testApplyConcurrentOneUserFiveApply() throws Exception {
+
+        // given
+        List<CompletableFuture<Boolean>> futures = new ArrayList<>(); // Boolean을 반환하도록 수정
+
+        for (int i = 0; i < 5; i++) {
+            // 각 요청을 비동기적으로 실행
+            CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    lectureFacade.applyLecture(new ApplyLectureCommand(1L, 2L));
+                    return true; // 성공 시 true 반환
+                } catch (Exception e) {
+                    return false; // 실패 시 false 반환
+                }
+            });
+            futures.add(future);
+        }
+
+        // 모든 CompletableFuture가 완료될 때까지 대기
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allOf.join(); // 예외가 발생하면 여기서 발생함
+
+        // 성공/실패 확인
+        long successCount = futures.stream()
+                .filter(CompletableFuture::join) // true인 경우만 필터링
+                .count();
+
+        long failureCount = futures.size() - successCount;
+
+        // 결과 출력
+        System.out.println("성공: " + successCount + ", 실패: " + failureCount);
+
+        // 검증
+        assertThat(successCount).isEqualTo(1); // 성공한 수는 1이어야 함
+        assertThat(failureCount).isEqualTo(4); // 실패한 수는 4이어야 함
+    }
+
 }
